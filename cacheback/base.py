@@ -321,8 +321,8 @@ class Job(object):
         if data is None:
             return True
 
-        delta = expiry - time.time()
-        if delta > 0:
+        timeout = expiry - self.lifetime
+        if timeout > time.time():
             return False
 
         return True
