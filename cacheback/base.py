@@ -316,13 +316,15 @@ class Job(object):
         """
         Verify if the cache should be refreshed
         """
-        expiry, data = self.cache.get(self.key(*args, **kwargs), (None, None))
+        if not getattr(settings, 'CACHEBACK_TASK_ESCAPE_ALREADY_FRESH', False):
+            return True
 
+        expiry, data = self.cache.get(self.key(*args, **kwargs), (None, None))
         if data is None:
             return True
 
-        timeout = expiry - self.lifetime
-        if timeout > time.time():
+        delta = expiry - time.time() - self.refresh_timeout
+        if delta > 0:
             return False
 
         return True
@@ -472,8 +474,7 @@ class Job(object):
         The job class is instantiated with the passed constructor args and the
         refresh method is called with the passed call args.  That is::
 
-            data = klass(*obj_args, **obj_kwargs).refresh(
-                *call_args, **call_kwargs)
+            data = klass(*obj_args, **obj_kwargs)
 
         :klass_str: String repr of class (eg 'apps.twitter.jobs.FetchTweetsJob')
         :obj_args: Constructor args

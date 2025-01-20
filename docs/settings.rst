@@ -28,3 +28,11 @@ Make sure that the corresponding task queue is configured too.
 
 This specifies whether to ignore the result of the ``refresh_cache`` task
 and prevent Celery/RQ from storing it into its results backend.
+
+
+``CACHEBACK_TASK_ESCAPE_ALREADY_FRESH``
+---------------------------------------
+
+This specifies whether the refresh task execution should be skipped if
+the cached data's ``lifetime`` has not yet been exceeded. It defaults to
+``False``.
